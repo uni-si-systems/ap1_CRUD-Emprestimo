@@ -10,7 +10,6 @@ export async function createTable() {
             ano_fabricacao INTEGER NOT NULL,
             valor_emprestimo REAL NOT NULL,
             placa TEXT NOT NULL CHECK (LENGTH(placa) = 7 AND placa GLOB '[A-Z][A-Z][A-Z][0-9][A-Z][0-9][0-9]'),
-            disponivel BOOLEAN
             )`
     );
 }

@@ -34,18 +34,17 @@ export async function initializeDatabase() {
             ano_fabricacao INTEGER NOT NULL,
             valor_emprestimo REAL NOT NULL,
             placa TEXT NOT NULL UNIQUE,
-            disponivel BOOLEAN NOT NULL CHECK (disponivel IN (0, 1)),
             CHECK (LENGTH(placa) = 7 AND placa GLOB '[A-Z][A-Z][A-Z][0-9][A-Z][0-9][0-9]')
         );
     `);
 
     // População inicial da tabela de veículos
     await db.run(`
-        INSERT INTO veiculos (modelo, marca, ano_fabricacao, valor_emprestimo, placa, disponivel)
+        INSERT INTO veiculos (modelo, marca, ano_fabricacao, valor_emprestimo, placa)
         VALUES 
-        ('Fusca', 'Volkswagen', 1974, 50.00, 'ABC1D23', 1),
-        ('Civic', 'Honda', 2015, 150.00, 'XYZ9E87', 1),
-        ('Onix', 'Chevrolet', 2020, 120.00, 'JKL5G65', 1)
+        ('Fusca', 'Volkswagen', 1974, 50.00, 'ABC1D23'),
+        ('Civic', 'Honda', 2015, 150.00, 'XYZ9E87'),
+        ('Onix', 'Chevrolet', 2020, 120.00, 'JKL5G65')
         ON CONFLICT(placa) DO NOTHING;
     `);
 
