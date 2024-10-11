@@ -13,20 +13,20 @@ const router = Router();
       })
     })
 
-    router.get('/clientes', selectClientes); // Seleciona todos os clientes
-    router.post('/clientes', insertClientes); // Insere um novo cliente
-    router.put('/cliente', updateClientes); // Atualiza um cliente
-    router.delete('/cliente', deleteCliente); // Deleta um cliente por ID (usando req.body.id)
+    router.get('/listarClientes', selectClientes); // Seleciona todos os clientes
+    router.post('/inserirClientes', insertClientes); // Insere um novo cliente
+    router.put('/atualizarClientes', updateClientes); // Atualiza um cliente
+    router.delete('/deletarClientes', deleteCliente); // Deleta um cliente por ID (usando req.body.id)
 
-    router.get('/veiculos', selectVeiculos); // Seleciona todos os veiculo
-    router.post('/veiculos', insertVeiculos); // Insere um novo veiculo
-    router.put('/veiculo', updateVeiculos); // Atualiza um veiculo
-    router.delete('/veiculos', deleteVeiculo); // Deleta um veiculo por ID (usando req.body.id)
+    router.get('/listarVeiculos', selectVeiculos); // Seleciona todos os veiculo
+    router.post('/inserirVeiculos', insertVeiculos); // Insere um novo veiculo
+    router.put('/atualizarVeiculos', updateVeiculos); // Atualiza um veiculo
+    router.delete('/deletarVeiculos', deleteVeiculo); // Deleta um veiculo por ID (usando req.body.id)
 
-    router.get('/emprestimos', selectEmprestimos); // Seleciona todos os emprestimos
-    router.post('/emprestimos', insertEmprestimo); // Insere um novo emprestimos
-    router.put('/emprestimos', updateEmprestimo); // Atualiza um emprestimos
-    router.delete('/emprestimos', deleteEmprestimos); // Deleta um emprestimos por ID (usando req.body.id)
+    router.get('/listarEmprestimos', selectEmprestimos); // Seleciona todos os emprestimos
+    router.post('/inserirEmprestimos', insertEmprestimo); // Insere um novo emprestimos
+    router.put('/atualizarEmprestimos', updateEmprestimo); // Atualiza um emprestimos
+    router.delete('/deletarEmprestimos', deleteEmprestimos); // Deleta um emprestimos por ID (usando req.body.id)
     
 export default router;
 
