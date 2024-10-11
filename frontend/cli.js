@@ -1,193 +1,179 @@
-// cli.js
+#!/usr/bin/env node
+
+import inquirer from 'inquirer';
 import axios from 'axios';
-import readline from 'readline';
 
-// Configura a entrada no terminal
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
+// URL base do seu backend
+const API_URL = 'http://localhost:3000';
 
-// URL base do seu servidor (ajuste conforme necessário)
-const baseURL = 'http://localhost:3000';
+// Função principal do menu
+async function mainMenu() {
+    const { option } = await inquirer.prompt([{
+        type: 'list',
+        name: 'option',
+        message: 'O que você gostaria de fazer?',
+        choices: [
+            'Gerenciar Clientes',
+            'Gerenciar Veículos',
+            'Gerenciar Empréstimos',
+            'Sair'
+        ]
+    }]);
 
-// Função para fazer requisições ao servidor
-async function makeRequest(method, url, data = {}) {
-    try {
-        const response = await axios({
-            method,
-            url: `${baseURL}${url}`,
-            data
-        });
-        console.log('Resposta:', response.data);
-    } catch (error) {
-        console.error('Erro:', error.response ? error.response.data : error.message);
+    switch (option) {
+        case 'Gerenciar Clientes':
+            return manageClientes();
+        case 'Gerenciar Veículos':
+            return manageVeiculos();
+        case 'Gerenciar Empréstimos':
+            return manageEmprestimos();
+        case 'Sair':
+            console.log('Saindo...');
+            process.exit(0);
     }
 }
 
-// Função para exibir o menu
-function showMenu() {
-    console.log(`
---- CLI Sistema de Gerenciamento ---
-1. Listar clientes
-2. Inserir cliente
-3. Atualizar cliente
-4. Deletar cliente
-5. Listar veículos
-6. Inserir veículo
-7. Atualizar veículo
-8. Deletar veículo
-9. Listar empréstimos
-10. Inserir empréstimo
-11. Atualizar empréstimo
-12. Deletar empréstimo
-13. Sair
-`);
+// Funções para Gerenciar Clientes
+async function manageClientes() {
+    const { action } = await inquirer.prompt([{
+        type: 'list',
+        name: 'action',
+        message: 'Ação em Clientes:',
+        choices: ['Listar', 'Inserir', 'Atualizar', 'Deletar', 'Voltar']
+    }]);
+
+    switch (action) {
+        case 'Listar':
+            const { data: clientes } = await axios.get(`${API_URL}/listarClientes`);
+            console.table(clientes);
+            break;
+        case 'Inserir':
+            const newCliente = await inquirer.prompt([
+                { name: 'nome', message: 'Nome do cliente:' },
+                { name: 'endereco', message: 'Endereço:' },
+                { name: 'idade', message: 'Idade:', type: 'number' },
+                { name: 'cpf', message: 'CPF:' }
+            ]);
+            await axios.post(`${API_URL}/inserirClientes`, newCliente);
+            console.log('Cliente inserido com sucesso!');
+            break;
+        case 'Atualizar':
+            const updateCliente = await inquirer.prompt([
+                { name: 'id', message: 'ID do cliente:', type: 'number' },
+                { name: 'nome', message: 'Nome do cliente:' },
+                { name: 'endereco', message: 'Endereço:' },
+                { name: 'idade', message: 'Idade:', type: 'number' },
+                { name: 'cpf', message: 'CPF:' }
+            ]);
+            await axios.put(`${API_URL}/atualizarClientes`, updateCliente);
+            console.log('Cliente atualizado com sucesso!');
+            break;
+        case 'Deletar':
+            const { id } = await inquirer.prompt([{ name: 'id', message: 'ID do cliente a deletar:', type: 'number' }]);
+            await axios.delete(`${API_URL}/deletarClientes`, { data: { id } });
+            console.log('Cliente deletado com sucesso!');
+            break;
+        case 'Voltar':
+            return mainMenu();
+    }
+    manageClientes();
 }
 
-// Função para selecionar uma opção do menu
-function handleMenuOption() {
-    rl.question('Escolha uma opção: ', (option) => {
-        switch (option) {
-            case '1':
-                makeRequest('get', '/clientes').then(showMenu).then(handleMenuOption);
-                break;
-            case '2':
-                rl.question('Nome do cliente: ', (nome) => {
-                    rl.question('Endereço do cliente: ', (endereco) => {
-                        rl.question('Idade do cliente: ', (idade) => {
-                            rl.question('CPF do cliente: ', (cpf) => {
-                                makeRequest('post', '/clientes', { nome, endereco, idade, cpf })
-                                    .then(showMenu)
-                                    .then(handleMenuOption);
-                            });
-                        });
-                    });
-                });
-                break;
-            case '3':
-                rl.question('ID do cliente a atualizar: ', (id) => {
-                    rl.question('Novo nome do cliente: ', (nome) => {
-                        rl.question('Novo endereço do cliente: ', (endereco) => {
-                            rl.question('Nova idade do cliente: ', (idade) => {
-                                rl.question('Novo CPF do cliente: ', (cpf) => {
-                                    makeRequest('put', `/clientes/${id}`, { nome, endereco, idade, cpf })
-                                        .then(showMenu)
-                                        .then(handleMenuOption);
-                                });
-                            });
-                        });
-                    });
-                });
-                break;
-            case '4':
-                rl.question('ID do cliente a deletar: ', (id) => {
-                    makeRequest('delete', `/clientes/${id}`)
-                        .then(showMenu)
-                        .then(handleMenuOption);
-                });
-                break;
-            case '5':
-                makeRequest('get', '/veiculos').then(showMenu).then(handleMenuOption);
-                break;
-            case '6':
-                rl.question('Modelo do veículo: ', (modelo) => {
-                    rl.question('Marca do veículo: ', (marca) => {
-                        rl.question('Ano de fabricação do veículo: ', (ano_fabricacao) => {
-                            rl.question('Valor do empréstimo: ', (valor_emprestimo) => {
-                                rl.question('Placa do veículo (L-L-L-N-L-N-N):', (placa) => {
-                                    makeRequest('post', '/veiculos', { modelo, marca, ano_fabricacao, valor_emprestimo, placa })
-                                        .then(showMenu)
-                                        .then(handleMenuOption);
-                                });
-                            });
-                        });
-                    });
-                });
-                break;
-            case '7':
-                rl.question('ID do veículo a atualizar: ', (id) => {
-                    rl.question('Novo modelo do veículo: ', (modelo) => {
-                        rl.question('Nova marca do veículo: ', (marca) => {
-                            rl.question('Novo ano de fabricação do veículo: ', (ano_fabricacao) => {
-                                rl.question('Novo valor do empréstimo: ', (valor_emprestimo) => {
-                                    rl.question('Nova placa do veículo (L-L-L-N-L-N-N): ', (placa) => {
-                                        makeRequest('put', `/veiculos/${id}`, { modelo, marca, ano_fabricacao, valor_emprestimo, placa })
-                                            .then(showMenu)
-                                            .then(handleMenuOption);
-                                    });
-                                });
-                            });
-                        });
-                    });
-                });
-                break;
-            case '8':
-                rl.question('ID do veículo a deletar: ', (id) => {
-                    makeRequest('delete', `/veiculos/${id}`)
-                        .then(showMenu)
-                        .then(handleMenuOption);
-                });
-                break;
-            case '9':
-                makeRequest('get', '/emprestimos').then(showMenu).then(handleMenuOption);
-                break;
-            case '10':
-                rl.question('ID do cliente: ', (cliente_id) => {
-                    rl.question('ID do veículo: ', (veiculo_id) => {
-                        rl.question('Data do empréstimo (YYYY-MM-DD): ', (data_emprestimo) => {
-                            rl.question('Data da devolução (YYYY-MM-DD): ', (data_devolucao) => {
-                                rl.question('Valor do empréstimo: ', (valor_emprestimo) => {
-                                    makeRequest('post', '/emprestimos', { cliente_id, veiculo_id, data_emprestimo, data_devolucao, valor_emprestimo })
-                                        .then(showMenu)
-                                        .then(handleMenuOption);
-                                });
-                            });
-                        });
-                    });
-                });
-                break;
-            case '11':
-                rl.question('ID do empréstimo a atualizar: ', (id) => {
-                    rl.question('Novo ID do cliente: ', (cliente_id) => {
-                        rl.question('Novo ID do veículo: ', (veiculo_id) => {
-                            rl.question('Nova data do empréstimo (YYYY-MM-DD): ', (data_emprestimo) => {
-                                rl.question('Nova data da devolução (YYYY-MM-DD): ', (data_devolucao) => {
-                                    rl.question('Novo valor do empréstimo: ', (valor_emprestimo) => {
-                                        makeRequest('put', `/emprestimos/${id}`, { cliente_id, veiculo_id, data_emprestimo, data_devolucao, valor_emprestimo })
-                                            .then(showMenu)
-                                            .then(handleMenuOption);
-                                    });
-                                });
-                            });
-                        });
-                    });
-                });
-                break;
-            case '12':
-                rl.question('ID do empréstimo a deletar: ', (id) => {
-                    makeRequest('delete', `/emprestimos/${id}`)
-                        .then(showMenu)
-                        .then(handleMenuOption);
-                });
-                break;
-            case '13':
-                console.log('Saindo...');
-                rl.close();
-                return;
-            default:
-                console.log('Opção inválida. Tente novamente.');
-                showMenu();
-                handleMenuOption();
-        }
-    });
+// Funções para Gerenciar Veículos
+async function manageVeiculos() {
+    const { action } = await inquirer.prompt([{
+        type: 'list',
+        name: 'action',
+        message: 'Ação em Veículos:',
+        choices: ['Listar', 'Inserir', 'Atualizar', 'Deletar', 'Voltar']
+    }]);
+
+    switch (action) {
+        case 'Listar':
+            const { data: veiculos } = await axios.get(`${API_URL}/listarVeiculos`);
+            console.table(veiculos);
+            break;
+        case 'Inserir':
+            const newVeiculo = await inquirer.prompt([
+                { name: 'modelo', message: 'Modelo do veículo:' },
+                { name: 'marca', message: 'Marca do veículo:' },
+                { name: 'ano_fabricacao', message: 'Ano de fabricação:', type: 'number' },
+                { name: 'valor_emprestimo', message: 'Valor do empréstimo:', type: 'number' },
+                { name: 'placa', message: 'Placa:' }
+            ]);
+            await axios.post(`${API_URL}/inserirVeiculos`, newVeiculo);
+            console.log('Veículo inserido com sucesso!');
+            break;
+        case 'Atualizar':
+            const updateVeiculo = await inquirer.prompt([
+                { name: 'id', message: 'ID do veículo:', type: 'number' },
+                { name: 'modelo', message: 'Modelo do veículo:' },
+                { name: 'marca', message: 'Marca do veículo:' },
+                { name: 'ano_fabricacao', message: 'Ano de fabricação:', type: 'number' },
+                { name: 'valor_emprestimo', message: 'Valor do empréstimo:', type: 'number' },
+                { name: 'placa', message: 'Placa:' }
+            ]);
+            await axios.put(`${API_URL}/atualizarVeiculos`, updateVeiculo);
+            console.log('Veículo atualizado com sucesso!');
+            break;
+        case 'Deletar':
+            const { id } = await inquirer.prompt([{ name: 'id', message: 'ID do veículo a deletar:', type: 'number' }]);
+            await axios.delete(`${API_URL}/deletarVeiculos`, { data: { id } });
+            console.log('Veículo deletado com sucesso!');
+            break;
+        case 'Voltar':
+            return mainMenu();
+    }
+    manageVeiculos();
 }
 
-// Inicializa o CLI
-function initCLI() {
-    showMenu();
-    handleMenuOption();
+// Funções para Gerenciar Empréstimos
+async function manageEmprestimos() {
+    const { action } = await inquirer.prompt([{
+        type: 'list',
+        name: 'action',
+        message: 'Ação em Empréstimos:',
+        choices: ['Listar', 'Inserir', 'Atualizar', 'Deletar', 'Voltar']
+    }]);
+
+    switch (action) {
+        case 'Listar':
+            const { data: emprestimos } = await axios.get(`${API_URL}/listarEmprestimos`);
+            console.table(emprestimos);
+            break;
+        case 'Inserir':
+            const newEmprestimo = await inquirer.prompt([
+                { name: 'cliente_id', message: 'ID do cliente:', type: 'number' },
+                { name: 'veiculo_id', message: 'ID do veículo:', type: 'number' },
+                { name: 'data_emprestimo', message: 'Data de empréstimo:' },
+                { name: 'data_devolucao', message: 'Data de devolução:' },
+                { name: 'valor_emprestimo', message: 'Valor do empréstimo:', type: 'number' }
+            ]);
+            await axios.post(`${API_URL}/inserirEmprestimos`, newEmprestimo);
+            console.log('Empréstimo inserido com sucesso!');
+            break;
+        case 'Atualizar':
+            const updateEmprestimo = await inquirer.prompt([
+                { name: 'id', message: 'ID do empréstimo:', type: 'number' },
+                { name: 'cliente_id', message: 'ID do cliente:', type: 'number' },
+                { name: 'veiculo_id', message: 'ID do veículo:', type: 'number' },
+                { name: 'data_emprestimo', message: 'Data de empréstimo:' },
+                { name: 'data_devolucao', message: 'Data de devolução:' },
+                { name: 'valor_emprestimo', message: 'Valor do empréstimo:', type: 'number' }
+            ]);
+            await axios.put(`${API_URL}/atualizarEmprestimos`, updateEmprestimo);
+            console.log('Empréstimo atualizado com sucesso!');
+            break;
+        case 'Deletar':
+            const { id } = await inquirer.prompt([{ name: 'id', message: 'ID do empréstimo a deletar:', type: 'number' }]);
+            await axios.delete(`${API_URL}/deletarEmprestimos`, { data: { id } });
+            console.log('Empréstimo deletado com sucesso!');
+            break;
+        case 'Voltar':
+            return mainMenu();
+    }
+    manageEmprestimos();
 }
 
 // Executa o CLI
-initCLI();
+mainMenu();
