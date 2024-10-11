@@ -48,25 +48,22 @@ O banco será populado com alguns dados iniciais para facilitar os testes.
 ## API Endpoints
 
 ### Clientes
-- `GET /clientes` - Lista todos os clientes
-- `GET /cliente` - Busca um cliente pelo ID
-- `POST /clientes` - Adiciona um novo cliente
-- `PUT /cliente` - Atualiza um cliente existente
-- `DELETE /cliente` - Remove um cliente pelo ID
+- `GET /listarClientes` - Lista todos os clientes
+- `POST /inserirClientes` - Adiciona um novo cliente
+- `PUT /atualizarClientes` - Atualiza um cliente existente
+- `DELETE /deletarClientes` - Remove um cliente pelo ID
 
 ### Veículos
-- `GET /veiculos` - Lista todos os veículos
-- `GET /veiculos` - Busca um veículo pelo ID
-- `POST /veiculos` - Adiciona um novo veículo
-- `PUT /veiculos` - Atualiza um veículo existente
-- `DELETE /veiculos` - Remove um veículo pelo ID
+- `GET /listarVeiculos` - Lista todos os veículos
+- `POST /inserirVeiculos` - Adiciona um novo veículo
+- `PUT /atualizarVeiculos` - Atualiza um veículo existente
+- `DELETE /deletarVeiculos` - Remove um veículo pelo ID
 
 ### Empréstimos
-- `GET /emprestimos` - Lista todos os empréstimos
-- `GET /emprestimo` - Busca um empréstimo pelo ID
-- `POST /emprestimos` - Registra um novo empréstimo
-- `PUT /emprestimos` - Atualiza um empréstimo existente
-- `DELETE /emprestimos` - Remove um empréstimo pelo ID
+- `GET /listarEmprestimos` - Lista todos os empréstimos
+- `POST /inserirEmprestimos` - Registra um novo empréstimo
+- `PUT /atualizarEmprestimos` - Atualiza um empréstimo existente
+- `DELETE /deletarEmprestimos` - Remove um empréstimo pelo ID
 
 # Caso de Uso 1: Cadastro de Cliente
 **Ator:** Usuário (Administrador/Sistema)  
@@ -74,13 +71,13 @@ O banco será populado com alguns dados iniciais para facilitar os testes.
 **Pré-condições:** O usuário tem as informações necessárias do cliente (nome, endereço, idade, CPF).
 
 ### Caminho Principal:
-1. O usuário acessa o endpoint `POST /clientes`.
+1. O usuário acessa o endpoint `POST /inserirClientes`.
 2. O sistema recebe os dados: nome, endereço, idade e CPF.
 3. O sistema valida o CPF (para garantir unicidade e formato correto).
 4. O cliente é inserido no banco de dados.
 5. O sistema retorna uma confirmação de sucesso.
 
-**Pós-condição:** O cliente é adicionado com sucesso e está disponível para visualização em `GET /clientes`.
+**Pós-condição:** O cliente é adicionado com sucesso e está disponível para visualização em `GET /listarClientes`.
 
 ---
 
@@ -90,7 +87,7 @@ O banco será populado com alguns dados iniciais para facilitar os testes.
 **Pré-condições:** O sistema possui clientes cadastrados.
 
 ### Caminho Principal:
-1. O usuário acessa o endpoint `GET /clientes`.
+1. O usuário acessa o endpoint `GET /listarClientes`.
 2. O sistema recupera a lista de todos os clientes do banco de dados.
 3. O sistema retorna um array JSON com as informações dos clientes.
 
@@ -104,7 +101,7 @@ O banco será populado com alguns dados iniciais para facilitar os testes.
 **Pré-condições:** O cliente existe e o usuário tem o ID do cliente.
 
 ### Caminho Principal:
-1. O usuário acessa o endpoint `PUT /cliente`.
+1. O usuário acessa o endpoint `PUT /atualizarClientes`.
 2. O sistema recebe o ID do cliente e as novas informações (nome, endereço, idade, CPF).
 3. O sistema valida as novas informações e atualiza o registro no banco de dados.
 4. O sistema retorna uma confirmação de sucesso.
@@ -119,13 +116,13 @@ O banco será populado com alguns dados iniciais para facilitar os testes.
 **Pré-condições:** O usuário tem as informações necessárias do veículo (modelo, marca, ano de fabricação, valor do empréstimo, placa, disponibilidade).
 
 ### Caminho Principal:
-1. O usuário acessa o endpoint `POST /veiculos`.
+1. O usuário acessa o endpoint `POST /inserirVeiculos`.
 2. O sistema recebe os dados: modelo, marca, ano de fabricação, valor do empréstimo, placa e disponibilidade.
 3. O sistema valida a placa (para garantir unicidade e formato correto).
 4. O veículo é inserido no banco de dados.
 5. O sistema retorna uma confirmação de sucesso.
 
-**Pós-condição:** O veículo é adicionado com sucesso e está disponível para visualização em `GET /veiculos`.
+**Pós-condição:** O veículo é adicionado com sucesso e está disponível para visualização em `GET /listarVeiculos`.
 
 ---
 
@@ -135,7 +132,7 @@ O banco será populado com alguns dados iniciais para facilitar os testes.
 **Pré-condições:** Um cliente e um veículo já estão cadastrados no sistema e o veículo está disponível.
 
 ### Caminho Principal:
-1. O usuário acessa o endpoint `POST /emprestimos`.
+1. O usuário acessa o endpoint `POST /inserirEmprestimos`.
 2. O sistema recebe os dados: ID do cliente, ID do veículo, data de início do empréstimo, data de devolução e valor do empréstimo.
 3. O sistema valida a disponibilidade do veículo.
 4. O sistema insere o empréstimo no banco de dados e marca o veículo como indisponível.
@@ -165,7 +162,7 @@ O banco será populado com alguns dados iniciais para facilitar os testes.
 **Pré-condições:** O empréstimo já está registrado e o veículo está indisponível.
 
 ### Caminho Principal:
-1. O usuário acessa o endpoint `PUT /emprestimos`.
+1. O usuário acessa o endpoint `PUT /listarEmprestimos`.
 2. O sistema recebe o ID do empréstimo e a data de devolução.
 3. O sistema atualiza o registro do empréstimo com a data de devolução e marca o veículo como disponível novamente.
 4. O sistema retorna uma confirmação de sucesso.
@@ -180,7 +177,7 @@ O banco será populado com alguns dados iniciais para facilitar os testes.
 **Pré-condições:** O cliente existe no sistema e não está associado a empréstimos ativos.
 
 ### Caminho Principal:
-1. O usuário acessa o endpoint `DELETE /cliente`.
+1. O usuário acessa o endpoint `DELETE /deletarClientes`.
 2. O sistema recebe o ID do cliente.
 3. O sistema verifica se o cliente não tem empréstimos pendentes.
 4. O sistema remove o cliente do banco de dados.
