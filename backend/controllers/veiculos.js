@@ -1,18 +1,5 @@
 import { openDb } from '../db.js';
 
-export async function createTable() {
-    const db = await openDb();
-    await db.exec(
-        `CREATE TABLE IF NOT EXISTS veiculos (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            modelo TEXT NOT NULL,
-            marca TEXT NOT NULL,
-            ano_fabricacao INTEGER NOT NULL,
-            valor_emprestimo REAL NOT NULL,
-            placa TEXT NOT NULL CHECK (LENGTH(placa) = 7 AND placa GLOB '[A-Z][A-Z][A-Z][0-9][A-Z][0-9][0-9]'),
-            )`
-    );
-}
 
 // Listar todos os Veiculos
 export function selectVeiculos(req, res) {

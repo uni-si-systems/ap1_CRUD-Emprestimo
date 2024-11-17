@@ -1,17 +1,5 @@
 import { openDb } from '../db.js';
 
-export async function createTable() {
-    const db = await openDb();
-    await db.exec(
-        `CREATE TABLE IF NOT EXISTS clientes ( 
-        id INTEGER PRIMARY KEY AUTOINCREMENT,   
-        nome TEXT NOT NULL,  
-        endereco TEXT NOT NULL,
-        idade INTEGER NOT NULL,  
-        cpf TEXT NOT NULL UNIQUE
-    );`);
-}
-
 // Listar os Clientes
 export function selectClientes(req, res) {
     openDb().then(db => {
