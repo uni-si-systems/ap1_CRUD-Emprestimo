@@ -1,85 +1,96 @@
 import { openDb } from '../db.js';
 
 // Listar todos os Emprestimos
-export function selectEmprestimos(req, res) {
-    openDb().then(db => {
-        db.all('SELECT * FROM emprestimos')
-            .then(emprestimos => {
-                res.json(emprestimos);
-            });
-    });
+export async function selectEmprestimos(req, res) {
+    try {
+        const db = await openDb();
+        const [emprestimos] = await db.query('SELECT * FROM emprestimos');
+        res.json(emprestimos);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao listar os empréstimos' });
+    }
 }
 
 // Filtrar Emprestimo especifico pelo ID
-export function selectEmprestimo(req, res) {
-    const id = req.body.id; 
-    openDb().then(db => {
-        db.get('SELECT * FROM emprestimos WHERE id = ?', [id])
-            .then(emprestimo => {
-                if (emprestimo) {
-                    res.json(emprestimo);
-                } else {
-                    res.status(404).json({ message: 'Emprestimo não encontrado' });
-                }
-            });
-    });
+export async function selectEmprestimo(req, res) {
+    const id = req.body.id;
+    try {
+        const db = await openDb();
+        const [rows] = await db.query('SELECT * FROM emprestimos WHERE id = ?', [id]);
+        const emprestimo = rows[0];
+        if (emprestimo) {
+            res.json(emprestimo);
+        } else {
+            res.status(404).json({ message: 'Empréstimo não encontrado' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao buscar o empréstimo' });
+    }
 }
 
 // Inserir Emprestimo
-export function insertEmprestimo(req, res) {
-    let emprestimo = req.body
-    openDb().then(db => {
-        db.run(
-            `INSERT INTO emprestimos (cliente_id, veiculo_id, data_emprestimo, data_devolucao, valor_emprestimo  ) VALUES (?, ?, ?, ?, ?)`,
-            [ emprestimo.cliente_id, emprestimo.veiculo_id, emprestimo.data_emprestimo, emprestimo.data_devolucao, emprestimo.valor_emprestimo ]
-        ).then(() => {
-            res.json({
-                "statusCode": 200
-            })
-            console.log('Emprestimo inserido com sucesso');
-        });
-    });
+export async function insertEmprestimo(req, res) {
+    const { cliente_id, veiculo_id, data_emprestimo, data_devolucao, valor_emprestimo } = req.body;
+    try {
+        const db = await openDb();
+        await db.query(
+            `INSERT INTO emprestimos (cliente_id, veiculo_id, data_emprestimo, data_devolucao, valor_emprestimo) 
+            VALUES (?, ?, ?, ?, ?)`,
+            [cliente_id, veiculo_id, data_emprestimo, data_devolucao, valor_emprestimo]
+        );
+        res.json({ statusCode: 200, message: 'Empréstimo inserido com sucesso' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao inserir o empréstimo' });
+    }
 }
 
+// Atualizar dados do Emprestimo
+export async function updateEmprestimo(req, res) {
+    const { id, cliente_id, veiculo_id, data_emprestimo, data_devolucao, valor_emprestimo } = req.body;
 
-// Atualizar dados Emprestimo
-export function updateEmprestimo(req, res) {
-    let emprestimo = req.body
-
-    if (!emprestimo.id) {
+    if (!id) {
         return res.status(400).json({
             statusCode: 400,
-            message: 'O ID do emprestimo é obrigatório para a atualização.'
+            message: 'O ID do empréstimo é obrigatório para a atualização.',
         });
     }
 
-    openDb().then(db => {
-        db.run(
-            `UPDATE emprestimos SET cliente_id = ?, veiculo_id = ?, data_emprestimo = ?, data_devolucao = ?, valor_emprestimo = ? WHERE id = ?`,
-            [ emprestimo.cliente_id, emprestimo.veiculo_id, emprestimo.data_emprestimo, emprestimo.data_devolucao, emprestimo.valor_emprestimo, emprestimo.id ]
-        ).then(() => {
-            res.json({
-                "statusCode": 200
-            })
-            console.log('Emprestimo atualizado com sucesso');
-        });
-    });
+    try {
+        const db = await openDb();
+        const [result] = await db.query(
+            `UPDATE emprestimos 
+            SET cliente_id = ?, veiculo_id = ?, data_emprestimo = ?, data_devolucao = ?, valor_emprestimo = ? 
+            WHERE id = ?`,
+            [cliente_id, veiculo_id, data_emprestimo, data_devolucao, valor_emprestimo, id]
+        );
+
+        if (result.affectedRows > 0) {
+            res.json({ statusCode: 200, message: 'Empréstimo atualizado com sucesso' });
+        } else {
+            res.status(404).json({ message: 'Empréstimo não encontrado' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao atualizar o empréstimo' });
+    }
 }
 
 // Deletar Emprestimo
-export function deleteEmprestimos(req, res) {
-    let id = req.body.id
-    openDb().then(db => {
-        db.run('DELETE FROM emprestimos WHERE id = ?', [id])
-            .then(result => {
-                if (result.changes > 0) {
-                    res.json({ 
-                        "statusCode": 200,
-                        message: 'Emprestimo deletado com sucesso' 
-                    });
-                } else {
-                    res.status(404).json({ message: 'Emprestimo não encontrado' });
-                }
-            });
-    });
+export async function deleteEmprestimos(req, res) {
+    const { id } = req.body;
+    try {
+        const db = await openDb();
+        const [result] = await db.query('DELETE FROM emprestimos WHERE id = ?', [id]);
+        if (result.affectedRows > 0) {
+            res.json({ statusCode: 200, message: 'Empréstimo deletado com sucesso' });
+        } else {
+            res.status(404).json({ message: 'Empréstimo não encontrado' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao deletar o empréstimo' });
+    }
 }

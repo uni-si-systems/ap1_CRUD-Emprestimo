@@ -1,86 +1,96 @@
 import { openDb } from '../db.js';
 
-
-// Listar todos os Veiculos
-export function selectVeiculos(req, res) {
-    openDb().then(db => {
-        db.all('SELECT * FROM veiculos')
-            .then(veiculos => {
-                res.json(veiculos);
-            });
-    });
+// Listar todos os Veículos
+export async function selectVeiculos(req, res) {
+    try {
+        const db = await openDb();
+        const [veiculos] = await db.query('SELECT * FROM veiculos');
+        res.json(veiculos);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao listar os veículos' });
+    }
 }
 
-// Filtrar Veiculo especifico pelo ID
-export function selectVeiculo(req, res) {
-    const id = req.body.id; 
-    openDb().then(db => {
-        db.get('SELECT * FROM veiculos WHERE id = ?', [id])
-            .then(veiculo => {
-                if (veiculo) {
-                    res.json(veiculo);
-                } else {
-                    res.status(404).json({ message: 'Veiculo não encontrado' });
-                }
-            });
-    });
+// Filtrar Veículo específico pelo ID
+export async function selectVeiculo(req, res) {
+    const { id } = req.body;
+    try {
+        const db = await openDb();
+        const [rows] = await db.query('SELECT * FROM veiculos WHERE id = ?', [id]);
+        const veiculo = rows[0];
+        if (veiculo) {
+            res.json(veiculo);
+        } else {
+            res.status(404).json({ message: 'Veículo não encontrado' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao buscar o veículo' });
+    }
 }
 
-// Inserir veiculos
-export function insertVeiculos(req, res) {
-    let veiculo = req.body
-    openDb().then(db => {
-        db.run(
-            `INSERT INTO veiculos (modelo, marca , ano_fabricacao , valor_emprestimo, placa ) VALUES (?, ?, ?, ?, ?)`,
-            [veiculo.modelo, veiculo.marca, veiculo.ano_fabricacao, veiculo.valor_emprestimo, veiculo.placa]
-        ).then(() => {
-            res.json({
-                "statusCode": 200
-            })
-            console.log('Veiculo inserido com sucesso');
-        });
-    });
+// Inserir Veículos
+export async function insertVeiculos(req, res) {
+    const { modelo, marca, ano_fabricacao, valor_emprestimo, placa } = req.body;
+    try {
+        const db = await openDb();
+        await db.query(
+            `INSERT INTO veiculos (modelo, marca, ano_fabricacao, valor_emprestimo, placa) 
+            VALUES (?, ?, ?, ?, ?)`,
+            [modelo, marca, ano_fabricacao, valor_emprestimo, placa]
+        );
+        res.json({ statusCode: 200, message: 'Veículo inserido com sucesso' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao inserir o veículo' });
+    }
 }
 
+// Atualizar dados de Veículos
+export async function updateVeiculos(req, res) {
+    const { id, modelo, marca, ano_fabricacao, valor_emprestimo, placa } = req.body;
 
-// Atualizar dados veiculos
-export function updateVeiculos(req, res) {
-    let veiculo = req.body
-
-    if (!veiculo.id) {
+    if (!id) {
         return res.status(400).json({
             statusCode: 400,
-            message: 'O ID do veículo é obrigatório para a atualização.'
+            message: 'O ID do veículo é obrigatório para a atualização.',
         });
     }
 
-    openDb().then(db => {
-        db.run(
-            `UPDATE veiculos SET modelo = ?, marca = ?, ano_fabricacao = ?, valor_emprestimo = ?, placa = ? WHERE id = ?`,
-            [ veiculo.modelo, veiculo.marca, veiculo.ano_fabricacao, veiculo.valor_emprestimo, veiculo.placa, veiculo.id ]
-        ).then(() => {
-            res.json({
-                "statusCode": 200
-            })
-            console.log('Veiculo atualizado com sucesso');
-        });
-    });
+    try {
+        const db = await openDb();
+        const [result] = await db.query(
+            `UPDATE veiculos 
+            SET modelo = ?, marca = ?, ano_fabricacao = ?, valor_emprestimo = ?, placa = ? 
+            WHERE id = ?`,
+            [modelo, marca, ano_fabricacao, valor_emprestimo, placa, id]
+        );
+
+        if (result.affectedRows > 0) {
+            res.json({ statusCode: 200, message: 'Veículo atualizado com sucesso' });
+        } else {
+            res.status(404).json({ message: 'Veículo não encontrado' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao atualizar o veículo' });
+    }
 }
 
-// Deletar Veiculo
-export function deleteVeiculo(req, res) {
-    let id = req.body.id
-    openDb().then(db => {
-        db.run('DELETE FROM veiculos WHERE id = ?', [id])
-            .then(result => {
-                if (result.changes > 0) {
-                    res.json({ 
-                        "statusCode": 200,
-                        message: 'Veiculo deletado com sucesso' 
-                    });
-                } else {
-                    res.status(404).json({ message: 'Veiculo não encontrado' });
-                }
-            });
-    });
+// Deletar Veículo
+export async function deleteVeiculo(req, res) {
+    const { id } = req.body;
+    try {
+        const db = await openDb();
+        const [result] = await db.query('DELETE FROM veiculos WHERE id = ?', [id]);
+        if (result.affectedRows > 0) {
+            res.json({ statusCode: 200, message: 'Veículo deletado com sucesso' });
+        } else {
+            res.status(404).json({ message: 'Veículo não encontrado' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao deletar o veículo' });
+    }
 }
