@@ -1,7 +1,7 @@
 import { openDb } from './db.js';
 
 export async function initializeDatabase() {
-    const db = await openDb(); // Assuming openDb is a function that connects to your MySQL database
+    const db = await openDb();
 
     // Criação da tabela de clientes
     await db.query(`
@@ -56,8 +56,7 @@ export async function initializeDatabase() {
             veiculo_id BIGINT,
             data_emprestimo DATE NOT NULL,
             data_devolucao DATE NOT NULL,
-            valor_emprestimo AS (DATEDIFF(data_devolucao, data_emprestimo) * 
-                (SELECT valor_diaria FROM veiculos WHERE veiculos.id = veiculo_id)) STORED,
+            valor_emprestimo DECIMAL(10, 2) NOT NULL,
             FOREIGN KEY (cliente_id) REFERENCES clientes(id),
             FOREIGN KEY (veiculo_id) REFERENCES veiculos(id)
         );
@@ -65,11 +64,11 @@ export async function initializeDatabase() {
 
     // População inicial da tabela de empréstimos
     await db.query(`
-        INSERT INTO emprestimos (cliente_id, veiculo_id, data_emprestimo, data_devolucao)
+        INSERT INTO emprestimos (cliente_id, veiculo_id, data_emprestimo, data_devolucao, valor_emprestimo)
         VALUES 
-        (1, 1, '2023-09-01', '2023-09-10'),
-        (2, 2, '2023-09-05', '2023-09-15'),
-        (3, 3, '2023-09-07', '2023-09-17');
+        (1, 1, '2023-09-01', '2023-09-10', (DATEDIFF('2023-09-10', '2023-09-01') * 5.00)),
+        (2, 2, '2023-09-05', '2023-09-15', (DATEDIFF('2023-09-15', '2023-09-05') * 15.00)),
+        (3, 3, '2023-09-07', '2023-09-17', (DATEDIFF('2023-09-17', '2023-09-07') * 12.00));
     `);
 
     console.log("Tabelas criadas e dados inseridos com sucesso!");
