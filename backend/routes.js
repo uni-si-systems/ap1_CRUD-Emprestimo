@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { insertClientes, updateClientes, selectClientes, selectCliente, deleteCliente } from './controllers/clientes.js';
-import { selectVeiculos, selectVeiculo, insertVeiculos, updateVeiculos, deleteVeiculo} from './controllers/veiculos.js';
-import { selectEmprestimos, selectEmprestimo, insertEmprestimo, updateEmprestimo, deleteEmprestimos } from './controllers/emprestimos.js';
+import { deleteCliente, insertClientes, selectClientes, updateClientes } from './controllers/clientes.js';
+import { deleteEmprestimos, insertEmprestimo, selectEmprestimos, updateEmprestimo } from './controllers/emprestimos.js';
 import { login } from "./controllers/login.js";
+import { deleteVeiculo, insertVeiculos, selectVeiculos, updateVeiculos } from './controllers/veiculos.js';
 
 const router = Router();
 

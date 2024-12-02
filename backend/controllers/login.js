@@ -1,12 +1,12 @@
 import { openDb } from '../db.js';
 
-export async function login() {
+export async function login(req, res) {
     
     const { email, password } = req.body;
     
     try {
         const db = await openDb();
-        const user = await db.get(
+        const user = await db.query(
             'SELECT * FROM clientes WHERE email = ? AND senha = ?',
             [email, password]
         );

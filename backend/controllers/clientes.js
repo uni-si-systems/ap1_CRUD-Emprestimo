@@ -4,7 +4,7 @@ import { openDb } from '../db.js';
 export async function selectClientes(req, res) {
     try {
         const db = await openDb();
-        const clientes = await db.all('SELECT * FROM clientes');
+        const clientes = await db.query('SELECT * FROM clientes');
         res.json(clientes);
     } catch (error) {
         console.error(error);
