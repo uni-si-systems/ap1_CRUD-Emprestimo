@@ -2,6 +2,7 @@ import { Router } from "express";
 import { insertClientes, updateClientes, selectClientes, selectCliente, deleteCliente } from './controllers/clientes.js';
 import { selectVeiculos, selectVeiculo, insertVeiculos, updateVeiculos, deleteVeiculo} from './controllers/veiculos.js';
 import { selectEmprestimos, selectEmprestimo, insertEmprestimo, updateEmprestimo, deleteEmprestimos } from './controllers/emprestimos.js';
+import { login } from "./controllers/login.js";
 
 const router = Router();
 
@@ -28,5 +29,7 @@ const router = Router();
     router.put('/atualizarEmprestimos', updateEmprestimo); // Atualiza um emprestimos
     router.delete('/deletarEmprestimos', deleteEmprestimos); // Deleta um emprestimos por ID (usando req.body.id)
     
+    router.post('/login', login); // credenciais para login
+
 export default router;
 

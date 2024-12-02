@@ -1,5 +1,3 @@
-// import { createTable, insertClientes, updateClientes, selectClientes, selectCliente, deleteCliente } from './controllers/clientes.js';
-// import { createTable } from './controllers/veiculos.js';
 import { initializeDatabase } from './createTable.js';
 
 import express from 'express';

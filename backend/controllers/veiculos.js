@@ -4,7 +4,18 @@ import { openDb } from '../db.js';
 export async function selectVeiculos(req, res) {
     try {
         const db = await openDb();
-        const [veiculos] = await db.query('SELECT * FROM veiculos');
+        const [veiculos] = await db.query(`
+            SELECT 
+                id, 
+                modelo, 
+                marca, 
+                ano_fabricacao, 
+                valor_diaria, 
+                placa,
+                true AS disponivel
+            FROM veiculos
+        `);
+
         res.json(veiculos);
     } catch (error) {
         console.error(error);

@@ -3,11 +3,12 @@ import { openDb } from './db.js';
 export async function initializeDatabase() {
     const db = await openDb();
 
-    // Criação da tabela de clientes
     await db.query(`
         CREATE TABLE IF NOT EXISTS clientes (
             id BIGINT PRIMARY KEY AUTO_INCREMENT,
             nome VARCHAR(255) NOT NULL,
+            email VARCHAR(255) NOT NULL UNIQUE,
+            senha VARCHAR(255) NOT NULL,
             endereco VARCHAR(255) NOT NULL,
             idade INT NOT NULL,
             cpf VARCHAR(11) NOT NULL UNIQUE,
@@ -15,15 +16,16 @@ export async function initializeDatabase() {
         );
     `);
 
-    // População inicial da tabela de clientes
+    // População inicial da tabela unificada
     await db.query(`
-        INSERT INTO clientes (nome, endereco, idade, cpf)
+        INSERT INTO clientes (nome, email, senha, endereco, idade, cpf)
         VALUES 
-        ('João Silva', 'Rua A, 123', 30, '12345678901'),
-        ('Maria Oliveira', 'Avenida B, 456', 25, '23456789012'),
-        ('Carlos Pereira', 'Travessa C, 789', 40, '34567890123')
-        ON DUPLICATE KEY UPDATE cpf=cpf;
+        ('Admin', 'admin@example.com', 'senha123', 'Admin Street, 0', 40, '00000000000'),
+        ('João Silva', 'joao@example.com', 'senha456', 'Rua A, 123', 30, '12345678901'),
+        ('Maria Oliveira', 'maria@example.com', 'senha789', 'Avenida B, 456', 25, '23456789012')
+        ON DUPLICATE KEY UPDATE email=email;
     `);
+    
 
     // Criação da tabela de veículos
     await db.query(`
@@ -34,6 +36,7 @@ export async function initializeDatabase() {
             ano_fabricacao INT NOT NULL,
             valor_diaria DECIMAL(10, 2) NOT NULL,
             placa VARCHAR(7) NOT NULL UNIQUE,
+            disponivel BOOLEAN DEFAULT true,
             CHECK (CHAR_LENGTH(placa) = 7 AND placa REGEXP '^[A-Z]{3}[0-9][A-Z][0-9]{2}$')
         );
     `);
@@ -42,7 +45,7 @@ export async function initializeDatabase() {
     await db.query(`
         INSERT INTO veiculos (modelo, marca, ano_fabricacao, valor_diaria, placa)
         VALUES 
-        ('Fusca', 'Volkswagen', 1974, 5.00, 'ABC1D23'),
+        ('Fusca', 'Volkswagen', 1975, 5.00, 'ABC1D23'),
         ('Civic', 'Honda', 2015, 15.00, 'XYZ9E87'),
         ('Onix', 'Chevrolet', 2020, 12.00, 'JKL5G65')
         ON DUPLICATE KEY UPDATE placa=placa;
