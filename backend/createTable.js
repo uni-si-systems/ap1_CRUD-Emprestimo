@@ -34,7 +34,7 @@ export async function initializeDatabase() {
             modelo VARCHAR(255) NOT NULL,
             marca VARCHAR(255) NOT NULL,
             ano_fabricacao INT NOT NULL,
-            valor_diaria DECIMAL(10, 2) NOT NULL,
+            valor_diaria DECIMAL(10) NOT NULL,
             placa VARCHAR(7) NOT NULL UNIQUE,
             disponivel BOOLEAN DEFAULT true,
             CHECK (CHAR_LENGTH(placa) = 7 AND placa REGEXP '^[A-Z]{3}[0-9][A-Z][0-9]{2}$')
@@ -45,9 +45,9 @@ export async function initializeDatabase() {
     await db.query(`
         INSERT INTO veiculos (modelo, marca, ano_fabricacao, valor_diaria, placa)
         VALUES 
-        ('Fusca', 'Volkswagen', 1975, 5.00, 'ABC1D23'),
-        ('Civic', 'Honda', 2015, 15.00, 'XYZ9E87'),
-        ('Onix', 'Chevrolet', 2020, 12.00, 'JKL5G65')
+        ('Fusca', 'Volkswagen', 1975, 5, 'ABC1D23'),
+        ('Civic', 'Honda', 2015, 15, 'XYZ9E87'),
+        ('Onix', 'Chevrolet', 2020, 12, 'JKL5G65')
         ON DUPLICATE KEY UPDATE placa=placa;
     `);
 

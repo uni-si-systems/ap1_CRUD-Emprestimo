@@ -14,18 +14,17 @@ export async function selectEmprestimos(req, res) {
 
 // Filtrar Emprestimo especifico pelo ID
 export async function selectEmprestimo(req, res) {
-    const id = req.body.id;
+    const { id } = req.query;
     try {
         const db = await openDb();
         const [rows] = await db.query('SELECT * FROM emprestimos WHERE id = ?', [id]);
-        const emprestimo = rows[0];
-        if (emprestimo) {
-            res.json(emprestimo);
+        if (rows.length > 0) {
+            res.json({ data: rows[0] });
         } else {
             res.status(404).json({ message: 'Empréstimo não encontrado' });
         }
     } catch (error) {
-        console.error(error);
+        console.error('Erro ao buscar o empréstimo:', error);
         res.status(500).json({ message: 'Erro ao buscar o empréstimo' });
     }
 }

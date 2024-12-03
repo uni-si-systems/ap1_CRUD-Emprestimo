@@ -7,11 +7,12 @@ export async function login(req, res) {
     try {
         const db = await openDb();
         const user = await db.query(
-            'SELECT * FROM clientes WHERE email = ? AND senha = ?',
+            'SELECT * FROM clientes WHERE email = ? AND senha = ? LIMIT 1',
             [email, password]
         );
     
         if (user) {
+                console.log(user)
                 return res.status(200).json({ success: true, message: 'Login realizado com sucesso', user });
         } else {
                 return res.status(401).json({ error: 'Email ou senha incorretos' });
