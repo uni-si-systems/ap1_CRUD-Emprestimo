@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { deleteCliente, insertClientes, selectClientes, updateClientes } from './controllers/clientes.js';
+import { deleteCliente, insertClientes, selectCliente, selectClientes, updateClientes } from './controllers/clientes.js';
 import { deleteEmprestimos, insertEmprestimo, selectEmprestimos, updateEmprestimo } from './controllers/emprestimos.js';
 import { login } from "./controllers/login.js";
 import { deleteVeiculo, insertVeiculos, selectVeiculos, updateVeiculos } from './controllers/veiculos.js';
@@ -15,6 +15,7 @@ const router = Router();
     })
 
     router.get('/listarClientes', selectClientes); // Seleciona todos os clientes
+    router.get('/exibirCliente', selectCliente) // Seleciona o cliente pelo ID
     router.post('/inserirClientes', insertClientes); // Insere um novo cliente
     router.put('/atualizarClientes', updateClientes); // Atualiza um cliente
     router.delete('/deletarClientes', deleteCliente); // Deleta um cliente por ID (usando req.body.id)
