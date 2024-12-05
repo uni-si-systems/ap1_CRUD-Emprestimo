@@ -2,7 +2,7 @@ import { Router } from "express";
 import { deleteCliente, insertClientes, selectCliente, selectClientes, updateClientes } from './controllers/clientes.js';
 import { deleteEmprestimos, insertEmprestimo, selectEmprestimos, updateEmprestimo } from './controllers/emprestimos.js';
 import { login } from "./controllers/login.js";
-import { deleteVeiculo, insertVeiculos, selectVeiculos, updateVeiculos } from './controllers/veiculos.js';
+import { deleteVeiculo, insertVeiculos, selectVeiculos, updateVeiculoDisponibilidade, updateVeiculos } from './controllers/veiculos.js';
 
 const router = Router();
 
@@ -24,6 +24,7 @@ const router = Router();
     router.post('/inserirVeiculos', insertVeiculos); // Insere um novo veiculo
     router.put('/atualizarVeiculos', updateVeiculos); // Atualiza um veiculo
     router.delete('/deletarVeiculos', deleteVeiculo); // Deleta um veiculo por ID (usando req.body.id)
+    router.put('/disponibilidadeVeiculo/:id', updateVeiculoDisponibilidade); // Atualiza a disponibilidade do Veiculo
 
     router.get('/listarEmprestimos', selectEmprestimos); // Seleciona todos os emprestimos
     router.post('/inserirEmprestimos', insertEmprestimo); // Insere um novo emprestimos

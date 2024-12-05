@@ -105,3 +105,18 @@ export async function deleteVeiculo(req, res) {
         res.status(500).json({ message: 'Erro ao deletar o veículo' });
     }
 }
+
+// Alterar disponibilidade veiculo
+export async function updateVeiculoDisponibilidade(req, res) {
+    const { id } = req.params; // Captura o parâmetro id
+    const { disponivel } = req.body; // Captura o valor de disponibilidade do corpo
+
+    try {
+        const db = await openDb();
+        await db.query('UPDATE veiculos SET disponivel = ? WHERE id = ?', [disponivel, id]);
+        res.json({ message: 'Disponibilidade atualizada com sucesso.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao atualizar disponibilidade do veículo.' });
+    }
+}
