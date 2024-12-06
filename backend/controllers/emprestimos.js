@@ -12,20 +12,33 @@ export async function selectEmprestimos(req, res) {
     }
 }
 
-// Filtrar Emprestimo especifico pelo ID
-export async function selectEmprestimo(req, res) {
-    const { id } = req.query;
+export async function selectEmprestimoID(req, res) {
+    const { cliente_id } = req.query;
+    if (!cliente_id) {
+        return res.status(400).json({ message: 'ID do cliente é necessário' });
+    }
     try {
         const db = await openDb();
-        const [rows] = await db.query('SELECT * FROM emprestimos WHERE id = ?', [id]);
-        if (rows.length > 0) {
-            res.json({ data: rows[0] });
-        } else {
-            res.status(404).json({ message: 'Empréstimo não encontrado' });
-        }
+        const [rows] = await db.query(
+            `SELECT 
+                e.id, 
+                e.data_emprestimo AS dataInicio, 
+                e.data_devolucao AS dataFim, 
+                e.valor_emprestimo AS valorTotal, 
+                v.modelo, 
+                v.marca, 
+                v.ano_fabricacao AS anoFabricacao, 
+                v.placa 
+            FROM emprestimos e
+            JOIN veiculos v ON e.veiculo_id = v.id
+            WHERE e.cliente_id = ?`,
+            [cliente_id]
+        );
+
+        res.json({ data: rows });
     } catch (error) {
-        console.error('Erro ao buscar o empréstimo:', error);
-        res.status(500).json({ message: 'Erro ao buscar o empréstimo' });
+        console.error('Erro ao buscar os empréstimos:', error);
+        res.status(500).json({ message: 'Erro ao buscar os empréstimos' });
     }
 }
 

@@ -12,7 +12,7 @@ export async function selectVeiculos(req, res) {
                 ano_fabricacao, 
                 valor_diaria, 
                 placa,
-                true AS disponivel
+                disponivel
             FROM veiculos
         `);
 
