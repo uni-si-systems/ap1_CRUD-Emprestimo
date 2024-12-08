@@ -60,6 +60,7 @@ export async function initializeDatabase() {
             data_emprestimo DATE NOT NULL,
             data_devolucao DATE NOT NULL,
             valor_emprestimo DECIMAL(10, 2) NOT NULL,
+            devolvido BOOLEAN default false,
             FOREIGN KEY (cliente_id) REFERENCES clientes(id),
             FOREIGN KEY (veiculo_id) REFERENCES veiculos(id)
         );

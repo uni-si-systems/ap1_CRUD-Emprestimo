@@ -25,6 +25,7 @@ export async function selectEmprestimoID(req, res) {
                 e.data_emprestimo AS dataInicio, 
                 e.data_devolucao AS dataFim, 
                 e.valor_emprestimo AS valorTotal, 
+                e.veiculo_id,
                 v.modelo, 
                 v.marca, 
                 v.ano_fabricacao AS anoFabricacao, 
@@ -41,6 +42,7 @@ export async function selectEmprestimoID(req, res) {
         res.status(500).json({ message: 'Erro ao buscar os empréstimos' });
     }
 }
+
 
 // Inserir Emprestimo
 export async function insertEmprestimo(req, res) {
@@ -106,3 +108,5 @@ export async function deleteEmprestimos(req, res) {
         res.status(500).json({ message: 'Erro ao deletar o empréstimo' });
     }
 }
+
+
