@@ -32,10 +32,10 @@ export async function selectCliente(req, res) {
 
 // Inserir novos Clientes
 export async function insertClientes(req, res) {
-    const { nome, endereco, idade, cpf } = req.body;
+    const { nome, endereco, idade, cpf, email, senha } = req.body;
     try {
         const db = await openDb();
-        await db.run(
+        await db.execute(
             `INSERT INTO clientes (nome, email, senha, endereco, idade, cpf)
              VALUES (?, ?, ?, ?, ?, ?)`,
             [nome, email, senha, endereco, idade, cpf]
