@@ -109,4 +109,47 @@ export async function deleteEmprestimos(req, res) {
     }
 }
 
+// Atualizar disponibilidade do veículo e marcar empréstimo como devolvido
+export async function devolverCarro(req, res) {
+    const { veiculo_id, emprestimo_id } = req.body;
+
+    if (!veiculo_id || !emprestimo_id) {
+        return res.status(400).json({
+            message: 'ID do veículo e ID do empréstimo são necessários.'
+        });
+    }
+
+    try {
+        const db = await openDb();
+
+        // Atualizar disponibilidade do veículo
+        await db.query(
+            `UPDATE veiculos 
+             SET disponivel = true 
+             WHERE id = ?`,
+            [veiculo_id]
+        );
+
+        // Marcar empréstimo como devolvido
+        const [result] = await db.query(
+            `UPDATE emprestimos 
+             SET devolvido = true 
+             WHERE id = ?`,
+            [emprestimo_id]
+        );
+
+        if (result.affectedRows > 0) {
+            res.json({
+                message: 'Carro devolvido com sucesso.',
+                statusCode: 200
+            });
+        } else {
+            res.status(404).json({ message: 'Empréstimo não encontrado.' });
+        }
+    } catch (error) {
+        console.error('Erro ao devolver carro:', error);
+        res.status(500).json({ message: 'Erro ao devolver o carro.' });
+    }
+}
+
 
