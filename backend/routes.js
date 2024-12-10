@@ -2,8 +2,8 @@ import { Router } from "express";
 import { deleteCliente, insertClientes, selectCliente, selectClientes, updateClientes } from './controllers/clientes.js';
 import { deleteEmprestimos, devolverCarro, insertEmprestimo, selectEmprestimoID, selectEmprestimos, updateEmprestimo } from './controllers/emprestimos.js';
 import { login } from "./controllers/login.js";
-import { adicionarVeiculo, listarEmprestimosCliente } from "./controllers/admin.js";
-import { deleteVeiculo, insertVeiculos, selectVeiculos, updateVeiculoDisponibilidade, updateVeiculos } from './controllers/veiculos.js';
+import { adicionarVeiculo, detalhesVeiculo, listarClientes, listarEmprestimosCliente, updateVeiculos } from "./controllers/admin.js";
+import { deleteVeiculo, insertVeiculos, selectVeiculos, updateVeiculoDisponibilidade } from './controllers/veiculos.js';
 
 const router = Router();
 
@@ -14,7 +14,13 @@ const router = Router();
         "msg": "Api Rodando"
       })
     })
-
+    router.get('/admin/listarClientes', listarClientes); // Lista os emprestimos dos clientes pelo Admin
+    router.get('/admin/listarEmprestimosCliente/:clienteId', listarEmprestimosCliente); // Lista os emprestimos dos clientes pelo Admin
+    router.post('/admin/adicionarVeiculo', adicionarVeiculo); // Lista os emprestimos dos clientes pelo Admin
+    router.get('/admin/detalhesVeiculo/:id', detalhesVeiculo); // Lista os valores do veiculo pelo ID
+    router.put('/admin/atualizarVeiculo/:id', updateVeiculos); // Edita os valores do veiculos
+    
+    
     router.get('/listarClientes', selectClientes); // Seleciona todos os clientes
     router.get('/exibirCliente', selectCliente) // Seleciona o cliente pelo ID
     router.post('/inserirClientes', insertClientes); // Insere um novo cliente
@@ -23,8 +29,7 @@ const router = Router();
 
     router.get('/listarVeiculos', selectVeiculos); // Seleciona todos os veiculo
     router.post('/inserirVeiculos', insertVeiculos); // Insere um novo veiculo
-    router.put('/atualizarVeiculos', updateVeiculos); // Atualiza um veiculo
-    router.delete('/deletarVeiculos', deleteVeiculo); // Deleta um veiculo por ID (usando req.body.id)
+    router.delete('/admin/deletarVeiculo/:id', deleteVeiculo); // Deleta um veiculo por ID (usando req.body.id)
     router.put('/disponibilidadeVeiculo/:id', updateVeiculoDisponibilidade); // Atualiza a disponibilidade do Veiculo
     router.put('/devolverCarro', devolverCarro); // Rota para devolver o carro
 
@@ -33,10 +38,6 @@ const router = Router();
     router.post('/inserirEmprestimos', insertEmprestimo); // Insere um novo emprestimos
     router.put('/atualizarEmprestimos', updateEmprestimo); // Atualiza um emprestimos
     router.delete('/deletarEmprestimos', deleteEmprestimos); // Deleta um emprestimos por ID (usando req.body.id)
-    
-    
-    router.get('/listarEmprestimosCliente/:clienteId', listarEmprestimosCliente ); // Lista os emprestimos dos clientes pelo Admin
-    router.post('/admin/adicionarVeiculo', adicionarVeiculo); // Lista os emprestimos dos clientes pelo Admin
     
     
     
