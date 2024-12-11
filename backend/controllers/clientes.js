@@ -1,11 +1,10 @@
 import { openDb } from '../db.js';
-import bcrypt from 'bcrypt';
 
 // Listar os Clientes
 export async function selectClientes(req, res) {
     try {
         const db = await openDb();
-        const [clientes] = await db.execute('SELECT * FROM clientes'); // Use `db.execute` para MySQL
+        const clientes = await db.query('SELECT * FROM clientes');
         res.json(clientes);
     } catch (error) {
         console.error(error);
@@ -13,8 +12,6 @@ export async function selectClientes(req, res) {
     }
 }
 
-<<<<<<< HEAD
-=======
 // Listar Cliente especifico pelo ID
 export async function selectCliente(req, res) {
     const id = req.body.id; 
@@ -33,28 +30,20 @@ export async function selectCliente(req, res) {
     }
 }
 
->>>>>>> parent of 976a442 (ajuste nas endpoints, exclusão das não utilizadas)
 // Inserir novos Clientes
 export async function insertClientes(req, res) {
     const { nome, endereco, idade, cpf, email, senha } = req.body;
-
-    if (!nome || !email || !senha || !endereco || !idade || !cpf) {
-        return res.status(400).json({ message: 'Por favor, preencha todos os campos obrigatórios' });
-    }
-
     try {
-        const hashedPassword = await bcrypt.hash(senha, 10); // Criptografa a senha
-
         const db = await openDb();
         await db.execute(
             `INSERT INTO clientes (nome, email, senha, endereco, idade, cpf)
              VALUES (?, ?, ?, ?, ?, ?)`,
-            [nome, email, hashedPassword, endereco, idade, cpf]
+            [nome, email, senha, endereco, idade, cpf]
         );
 
         res.status(201).json({ message: 'Cliente inserido com sucesso!' });
     } catch (error) {
-        if (error.code === 'ER_DUP_ENTRY') { // Tratamento de erros para chaves duplicadas em MySQL
+        if (error.code === 'SQLITE_CONSTRAINT') {
             res.status(409).json({ message: 'CPF ou email já cadastrados' });
         } else {
             console.error(error);
@@ -62,8 +51,6 @@ export async function insertClientes(req, res) {
         }
     }
 }
-<<<<<<< HEAD
-=======
 
 // Atualizar dados de um Cliente pelo ID
 export async function updateClientes(req, res) {
@@ -105,4 +92,3 @@ export async function deleteCliente(req, res) {
         res.status(500).json({ message: 'Erro ao deletar o cliente' });
     }
 }
->>>>>>> parent of 976a442 (ajuste nas endpoints, exclusão das não utilizadas)
