@@ -135,19 +135,3 @@ export async function detalhesVeiculo(req, res) {
       res.status(500).json({ message: 'Erro ao buscar o veículo' });
   }
 }
-
-export async function deleteVeiculo(req, res) {
-  const { id } = req.params; // Mudança aqui, pegando o ID da URL
-  try {
-      const db = await openDb();
-      const [result] = await db.query('DELETE FROM veiculos WHERE id = ?', [id]);
-      if (result.affectedRows > 0) {
-          res.json({ statusCode: 200, message: 'Veículo deletado com sucesso' });
-      } else {
-          res.status(404).json({ message: 'Veículo não encontrado' });
-      }
-  } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Erro ao deletar o veículo' });
-  }
-}
