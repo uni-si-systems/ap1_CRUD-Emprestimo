@@ -20,7 +20,7 @@ export async function initializeDatabase() {
     await db.query(`
         INSERT INTO clientes (nome, email, senha, endereco, idade, cpf)
         VALUES 
-        ('Admin', 'admin@example.com', 'senha123', 'Admin Street, 0', 40, '00000000000'),
+        ('Admin', 'admin@admin', '$2b$10$UMeyOxTYIZSGMfUCntFqEeixZnrzbyp6EDAxdIMpIh27jGHleIj0C', 'Rua A', 44, '12345678987'),
         ('João Silva', 'joao@example.com', 'senha456', 'Rua A, 123', 30, '12345678901'),
         ('Maria Oliveira', 'maria@example.com', 'senha789', 'Avenida B, 456', 25, '23456789012')
         ON DUPLICATE KEY UPDATE email=email;
